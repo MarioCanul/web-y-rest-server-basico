@@ -1,42 +1,84 @@
-const {response,request}= require('express');
+const { response, request } = require("express");
+const Usuario = require("../models/usuario");
+const bcryptjs = require("bcryptjs");
 
-const userGet=( (req, res=response)=> {
+const userGet =async(req, res = response) => {
+    const {limite=5,desde=0}= req.query
+    const query = {estado:true};
 
-    res.json({
-        method:'Get-controlador'})
+
+    //COleccion de promesas para aumentar su velocidad de respuesta cuando tienes muchas pormesas en una solo controlador
+    //desestructuracion de un arreglo
+    const [usuarios,total] = await Promise.all([
+        Usuario.find(query)
+    //hasta cualtas colecciones se devuelven
+    .limit(Number(limite))
+    //desde que coleccion te enviaran
+    .skip(Number(desde)),
+    //contar total de usuarios
+    Usuario.countDocuments(query)
+    ])
+  res.json({
+      total,
+    usuarios
   });
-const userPost =((req=request,res=response)=>{
+};
+const userPost = async (req = request, res = response) => {
+  const { nombre, correo, password, rol } = req.body;
+  const usuario = new Usuario({ nombre, correo, password, rol });
 
-    const {nombrem, edad1, noenviado=true}= req.query
+  //verificacion si el correo existe
 
-    const {nombre='no enviado', edad}=req.body;
-res.json({
-    method:'POST-controller',
-    nombrem,
-    edad1,
-    noenviado,
-    nombre
-});
+  //encriptar la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
 
-})
+  //Guradar en BD
+  await usuario.save();
 
-const userDelete =((req=request,res=response)=>{
-    const {id}=req.params
-    res.json({
-        method:'Delete controller',
-        id
-    })
-    });
+  res.json({
+    method: "POST-controller",
+    usuario,
+  });
+};
 
+const userDelete = async(req = request, res = response) => {
+  const { id } = req.params;
+  //no se recomiendo borrar datos se recomiendo cambiarles el estado
+//   const usuario= await Usuario.findByIdAndDelete(id)
+const usuario= await Usuario.findByIdAndUpdate(id,{estado:false});
+  res.json({
+    usuario,
+    id,
+  });
+};
 
-    const userPatch=((req,res=response)=>{
-        res.json({
-            method:'PATCH controller'
-        })
-    })
-module.exports={
-    userGet,
-    userPost,
-    userDelete,
-    userPatch
-}
+const userPut = async (req, res = response) => {
+  const { id } = req.params;
+  const { password, google, correo, ...resto } = req.body;
+
+  //TODO validar contra base de datos
+  if (password) {
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
+  const usuario = await Usuario.findByIdAndUpdate(id, resto);
+  res.json({
+    method: "PUT",
+    id,
+    usuario,
+    resto,
+  });
+};
+const userPatch = (req, res = response) => {
+  res.json({
+    method: "PATCH controller",
+  });
+};
+module.exports = {
+  userGet,
+  userPost,
+  userDelete,
+  userPatch,
+  userPut,
+};

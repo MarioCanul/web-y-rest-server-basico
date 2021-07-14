@@ -33,7 +33,8 @@ const UsuarioSchema = Schema({
 
 //quitar parametros en la respuesta de un POST o cunado se pida el objeto por .toJSON
 UsuarioSchema.methods.toJSON=function () {
-    const {__v,password,...usuario}=this.toObject();
+    const {__v,password,_id,...usuario}=this.toObject();
+   usuario.uid=_id;
     return usuario;
 }
 

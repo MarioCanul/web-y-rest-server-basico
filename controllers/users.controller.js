@@ -44,12 +44,13 @@ const userPost = async (req = request, res = response) => {
 
 const userDelete = async(req = request, res = response) => {
   const { id } = req.params;
+  const {usuarioVerificado } = req;
   //no se recomiendo borrar datos se recomiendo cambiarles el estado
 //   const usuario= await Usuario.findByIdAndDelete(id)
 const usuario= await Usuario.findByIdAndUpdate(id,{estado:false});
   res.json({
     usuario,
-    id,
+    usuarioVerificado,
   });
 };
 

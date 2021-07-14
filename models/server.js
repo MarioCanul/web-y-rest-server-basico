@@ -6,6 +6,7 @@ constructor(){
 this.app=express();
 this.port=process.env.PORT;
 this.apiUser='/api/users';
+this.authUser='/api/auth'
 //coneccion DB
 this.ConnectionDB();
 //middlewares
@@ -18,6 +19,7 @@ async ConnectionDB(){
     await dbConnection();
 }
 routes(){
+  this.app.use(this.authUser, require('../routes/auth'));
   this.app.use(this.apiUser, require('../routes/users'));
 }
 

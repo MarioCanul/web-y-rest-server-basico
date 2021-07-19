@@ -5,8 +5,14 @@ class server{
 constructor(){
 this.app=express();
 this.port=process.env.PORT;
-this.apiUser='/api/users';
-this.authUser='/api/auth'
+
+this.paths={
+    User:'/api/users',
+    Auth:'/api/auth',
+    Buscar:'/api/buscar',
+    Categoria:'/api/categoria',
+    Productos:'/api/productos'
+}
 //coneccion DB
 this.ConnectionDB();
 //middlewares
@@ -19,8 +25,11 @@ async ConnectionDB(){
     await dbConnection();
 }
 routes(){
-  this.app.use(this.authUser, require('../routes/auth'));
-  this.app.use(this.apiUser, require('../routes/users'));
+  this.app.use(this.paths.Auth, require('../routes/auth'));
+  this.app.use(this.paths.Buscar, require('../routes/buscar'));
+  this.app.use(this.paths.User, require('../routes/users'));
+  this.app.use(this.paths.Categoria, require('../routes/categorias'));
+  this.app.use(this.paths.Productos, require('../routes/productos'));
 }
 
 middlewares(){

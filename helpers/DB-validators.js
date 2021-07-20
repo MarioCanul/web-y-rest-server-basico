@@ -24,6 +24,8 @@ const validarIdExiste = async (id = "") => {
   if (!existeId) {
     throw new Error(`El id no existe ${id} `);
   }
+  const modelo=existeId;
+  return modelo;
 };
 const validarCategoriaExiste = async (id = "") => {
   const existeId = await Categoria.findById(id);
@@ -38,12 +40,22 @@ const validarProductoExiste = async (id = "") => {
   if (!existeId) {
     throw new Error(`El id no existe ${id} `);
   }
+  const modelo=existeId;
+  return modelo;
 };
-
+//validar colecciones permitidas
+const coleccionesPermitidas=(coleccion='',colecciones=[])=>{
+const incluida=colecciones.includes(coleccion);
+if (!incluida) {
+  throw new Error(`La coleccion ${coleccion} no es permitida , ${colecciones}`);
+}
+return true;
+}
 module.exports = {
   validarRol,
   validarEmailExiste,
   validarIdExiste,
   validarCategoriaExiste,
   validarProductoExiste,
+  coleccionesPermitidas
 };

@@ -25,7 +25,8 @@ default:0
       ref:'Categoria',
       required:true
   },
-  descripcion:{tyep:String},
+  descripcion:{type:String},
   disponible:{type:Boolean,default:true},
+  img:{type:String},
 });
 module.exports = model("Producto", ProdcutoSchema);
